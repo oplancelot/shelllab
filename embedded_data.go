@@ -16,6 +16,9 @@ var embeddedDB []byte
 //go:embed data/icons/*
 var embeddedIcons embed.FS
 
+//go:embed data/npc_images/*
+var embeddedNpcImages embed.FS
+
 // InitializeData ensures data directory exists and extracts embedded database on first run
 // Icons are NOT embedded - they remain external and can be updated independently
 // Returns the absolute path to the data directory and whether we're in dev mode
@@ -77,42 +80,65 @@ func InitializeData() (string, bool, error) {
 	entries, _ := os.ReadDir(iconsDir)
 	if len(entries) < 50 {
 		log.Println("Extracting embedded icons (this may take a moment)...")
-		count := 0
-
-		err := fs.WalkDir(embeddedIcons, "data/icons", func(path string, d fs.DirEntry, err error) error {
-			if err != nil || d.IsDir() {
-				return err
-			}
-
-			// Read from embedded FS
-			content, err := embeddedIcons.ReadFile(path)
-			if err != nil {
-				return err
-			}
-
-			// Write to the correct dataDir location
-			relPath, _ := filepath.Rel("data/icons", path)
-			localPath := filepath.Join(iconsDir, relPath)
-
-			// Only write if file doesn't exist (preserve user updates)
-			if _, err := os.Stat(localPath); os.IsNotExist(err) {
-				if err := os.WriteFile(localPath, content, 0644); err != nil {
-					return err
-				}
-				count++
-				if count%100 == 0 {
-					log.Printf("  Extracted %d icons...", count)
-				}
-			}
-			return nil
-		})
-
-		if err != nil {
-			return "", false, fmt.Errorf("failed to extract icons: %w", err)
-		}
-		log.Printf("✓ Extracted %d embedded icons to %s", count, iconsDir)
+		extractAssets(embeddedIcons, "data/icons", iconsDir)
 		log.Println("📝 Tip: Downloaded icons will be saved to data/icons/ and take precedence over embedded ones")
 	}
 
+	// Extract NPC images if directory is empty
+	npcImagesDir := filepath.Join(dataDir, "npc_images")
+	if err := os.MkdirAll(npcImagesDir, 0755); err != nil {
+		log.Printf("Warning: Failed to create npc_images directory: %v", err)
+	} else {
+		npcEntries, _ := os.ReadDir(npcImagesDir)
+		if len(npcEntries) < 5 { // Only extract if very few images exist
+			log.Println("Extracting embedded NPC images...")
+			extractAssets(embeddedNpcImages, "data/npc_images", npcImagesDir)
+		}
+	}
+
 	return dataDir, isDevMode, nil
+}
+
+// extractAssets extracts files from an embedded FS to a destination directory
+func extractAssets(embedFs embed.FS, srcDir string, destDir string) error {
+	count := 0
+	err := fs.WalkDir(embedFs, srcDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil || d.IsDir() {
+			return err
+		}
+
+		// Read from embedded FS
+		content, err := embedFs.ReadFile(path)
+		if err != nil {
+			return err
+		}
+
+		// Write to the correct dataDir location
+		relPath, _ := filepath.Rel(srcDir, path)
+		localPath := filepath.Join(destDir, relPath)
+
+		// Create parent directory if needed (e.g. for nested resources)
+		if err := os.MkdirAll(filepath.Dir(localPath), 0755); err != nil {
+			return err
+		}
+
+		// Only write if file doesn't exist (preserve user updates)
+		if _, err := os.Stat(localPath); os.IsNotExist(err) {
+			if err := os.WriteFile(localPath, content, 0644); err != nil {
+				return err
+			}
+			count++
+			if count%100 == 0 {
+				log.Printf("  Extracted %d files...", count)
+			}
+		}
+		return nil
+	})
+
+	if err != nil {
+		log.Printf("Error extracting assets: %v", err)
+		return err
+	}
+	log.Printf("✓ Extracted %d files to %s", count, destDir)
+	return nil
 }
