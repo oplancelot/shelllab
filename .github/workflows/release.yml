@@ -77,6 +77,11 @@ jobs:
           if (Test-Path "data/icons") {
             Copy-Item "data/icons/*" -Destination "dist/data/icons/" -Recurse
           }
+           # Copy NPC images
+          New-Item -ItemType Directory -Force -Path "dist/data/npc_images"
+          if (Test-Path "data/npc_images") {
+            Copy-Item "data/npc_images/*" -Destination "dist/data/npc_images/" -Recurse
+          }
           Compress-Archive -Path "dist/*" -DestinationPath "ShellLab-Windows.zip"
 
       # --- Linux Packaging ---
@@ -88,6 +93,11 @@ jobs:
           # db embedded
           if [ -d "data/icons" ]; then
             cp -r data/icons/* dist/data/icons/
+          fi
+          # Copy NPC images
+          mkdir -p dist/data/npc_images
+          if [ -d "data/npc_images" ]; then
+            cp -r data/npc_images/* dist/data/npc_images/
           fi
           cd dist
           tar -czvf ../ShellLab-Linux.tar.gz *
@@ -102,6 +112,11 @@ jobs:
           # db embedded
           if [ -d "data/icons" ]; then
             cp -r data/icons/* build/bin/ShellLab.app/Contents/MacOS/data/icons/
+          fi
+          # Copy NPC images
+          mkdir -p build/bin/ShellLab.app/Contents/MacOS/data/npc_images
+          if [ -d "data/npc_images" ]; then
+            cp -r data/npc_images/* build/bin/ShellLab.app/Contents/MacOS/data/npc_images/
           fi
 
           cd build/bin
