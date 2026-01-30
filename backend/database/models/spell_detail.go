@@ -1,0 +1,21 @@
+package models
+
+// SpellUsedByItem represents an item that uses a spell
+type SpellUsedByItem struct {
+	Entry       int    `json:"entry"`
+	Name        string `json:"name"`
+	Quality     int    `json:"quality"`
+	IconPath    string `json:"iconPath"`
+	TriggerType int    `json:"triggerType"` // 0=Use, 1=Equip, 2=ChanceOnHit
+}
+
+type SpellDetail struct {
+	*SpellTemplateFull
+	Icon        string             `json:"icon"`
+	ToolTip     string             `json:"toolTip"`
+	CastTime    string             `json:"castTime"`
+	Range       string             `json:"range"`
+	Duration    string             `json:"duration"`
+	Power       string             `json:"power"`
+	UsedByItems []*SpellUsedByItem `json:"usedByItems,omitempty"`
+}

@@ -1,0 +1,42 @@
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+bin/
+dist/
+build/
+
+# Go
+go.sum
+vendor/
+
+# Frontend
+node_modules/
+frontend/dist/
+frontend/build/
+frontend/node_modules/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+ShellLab.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Databases
+*.db
+!data/shelllab.db
+
+# Temp
+*.tmp
+*.bak
+tmp/
+.agent/

@@ -1,0 +1,118 @@
+package main
+
+import (
+	"embed"
+	"fmt"
+	"io/fs"
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
+)
+
+//go:embed data/shelllab.db
+var embeddedDB []byte
+
+//go:embed data/icons/*
+var embeddedIcons embed.FS
+
+// InitializeData ensures data directory exists and extracts embedded database on first run
+// Icons are NOT embedded - they remain external and can be updated independently
+// Returns the absolute path to the data directory and whether we're in dev mode
+func InitializeData() (string, bool, error) {
+	var baseDir string
+
+	// Detect if running in dev mode (wails dev)
+	// In dev mode, the executable is in build/bin/ directory or a temp directory
+	// We want to use the current working directory (project root) instead
+	exePath, err := os.Executable()
+	if err != nil {
+		return "", false, fmt.Errorf("failed to get executable path: %w", err)
+	}
+
+	// Check if we're running from dev mode locations:
+	// - build/bin (wails dev on Windows/Linux)
+	// - Temp/tmp (some dev environments)
+	isDevMode := strings.Contains(exePath, "Temp") ||
+		strings.Contains(exePath, "tmp") ||
+		strings.Contains(exePath, "build"+string(os.PathSeparator)+"bin") ||
+		strings.Contains(exePath, "build/bin")
+
+	if isDevMode {
+		// Dev mode: use current working directory (project root)
+		cwd, err := os.Getwd()
+		if err != nil {
+			return "", false, fmt.Errorf("failed to get working directory: %w", err)
+		}
+		baseDir = cwd
+		log.Println("🔧 Development mode detected, using project root:", baseDir)
+	} else {
+		// Production mode: use executable directory
+		baseDir = filepath.Dir(exePath)
+		log.Println("📦 Production mode, using executable directory:", baseDir)
+	}
+
+	dataDir := filepath.Join(baseDir, "data")
+	iconsDir := filepath.Join(dataDir, "icons")
+	dbPath := filepath.Join(dataDir, "shelllab.db")
+
+	// Create directories
+	if err := os.MkdirAll(iconsDir, 0755); err != nil {
+		return "", false, fmt.Errorf("failed to create data directory: %w", err)
+	}
+
+	// In production, extract database if not exists
+	// In dev mode, we don't extract - we use the existing data/shelllab.db directly
+	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
+		log.Println("Extracting embedded database...")
+		if err := os.WriteFile(dbPath, embeddedDB, 0644); err != nil {
+			return "", false, fmt.Errorf("failed to write database: %w", err)
+		}
+		log.Println("✓ Database extracted to", dbPath)
+	} else {
+		log.Println("✓ Using existing database:", dbPath)
+	}
+
+	// Extract icons if directory is empty or mostly empty (< 50 icons)
+	entries, _ := os.ReadDir(iconsDir)
+	if len(entries) < 50 {
+		log.Println("Extracting embedded icons (this may take a moment)...")
+		count := 0
+
+		err := fs.WalkDir(embeddedIcons, "data/icons", func(path string, d fs.DirEntry, err error) error {
+			if err != nil || d.IsDir() {
+				return err
+			}
+
+			// Read from embedded FS
+			content, err := embeddedIcons.ReadFile(path)
+			if err != nil {
+				return err
+			}
+
+			// Write to the correct dataDir location
+			relPath, _ := filepath.Rel("data/icons", path)
+			localPath := filepath.Join(iconsDir, relPath)
+
+			// Only write if file doesn't exist (preserve user updates)
+			if _, err := os.Stat(localPath); os.IsNotExist(err) {
+				if err := os.WriteFile(localPath, content, 0644); err != nil {
+					return err
+				}
+				count++
+				if count%100 == 0 {
+					log.Printf("  Extracted %d icons...", count)
+				}
+			}
+			return nil
+		})
+
+		if err != nil {
+			return "", false, fmt.Errorf("failed to extract icons: %w", err)
+		}
+		log.Printf("✓ Extracted %d embedded icons to %s", count, iconsDir)
+		log.Println("📝 Tip: Downloaded icons will be saved to data/icons/ and take precedence over embedded ones")
+	}
+
+	return dataDir, isDevMode, nil
+}

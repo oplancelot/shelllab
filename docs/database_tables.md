@@ -1,0 +1,303 @@
+# MySQL Database Schema Documentation
+
+## Database Overview
+
+| Database   | Tables | Purpose                                               |
+| ---------- | ------ | ----------------------------------------------------- |
+| `aowow`    | 22     | AOWOW Website Data (Icons, Spells, Factions metadata) |
+| `tw_world` | 180+   | Turtle WoW World Data (Items, NPCs, Quests, etc.)     |
+
+---
+
+## aowow Database (22 Tables)
+
+### Character Related
+
+| Table Name          | Purpose          |
+| ------------------- | ---------------- |
+| `aowow_char_titles` | Character Titles |
+
+### Faction Related
+
+| Table Name              | Purpose                       |
+| ----------------------- | ----------------------------- |
+| `aowow_factions`        | Faction Data                  |
+| `aowow_factiontemplate` | Faction Templates (Relations) |
+
+### Item Related
+
+| Table Name              | Purpose                              |
+| ----------------------- | ------------------------------------ |
+| `aowow_icons`           | Item/Spell Icon Name Mappings        |
+| `aowow_itemenchantment` | Item Enchantment Effects             |
+| `aowow_itemset`         | Item Set Data (components & bonuses) |
+
+### Skill Related
+
+| Table Name                 | Purpose                      |
+| -------------------------- | ---------------------------- |
+| `aowow_skill`              | Skill Data                   |
+| `aowow_skill_line_ability` | Skill Line Ability Relations |
+
+### Spell Related
+
+| Table Name              | Purpose         |
+| ----------------------- | --------------- |
+| `aowow_spell`           | Spell Base Data |
+| `aowow_spellcasttimes`  | Cast Times      |
+| `aowow_spelldispeltype` | Dispel Types    |
+| `aowow_spellduration`   | Spell Durations |
+| `aowow_spellicons`      | Spell Icons     |
+| `aowow_spellmechanic`   | Spell Mechanics |
+| `aowow_spellradius`     | Spell Radius    |
+| `aowow_spellrange`      | Spell Range     |
+
+### Others
+
+| Table Name             | Purpose         |
+| ---------------------- | --------------- |
+| `aowow_comments`       | User Comments   |
+| `aowow_comments_rates` | Comment Ratings |
+| `aowow_lock`           | Lock Data       |
+| `aowow_news`           | News            |
+| `aowow_resistances`    | Resistance Data |
+| `aowow_zones`          | Zone/Map Data   |
+
+---
+
+## tw_world Database (Main Tables)
+
+### Item Related
+
+| Table Name                   | Purpose                   |
+| ---------------------------- | ------------------------- |
+| `item_template`              | Item Template (Base data) |
+| `item_display_info`          | Item Display Info         |
+| `item_enchantment_template`  | Item Enchantment Template |
+| `item_loot_template`         | Item Loot Template        |
+| `item_required_target`       | Item Required Target      |
+| `item_transmogrify_template` | Transmogrify Template     |
+| `locales_item`               | Item Localization         |
+
+### NPC/Creature Related
+
+| Table Name                    | Purpose                     |
+| ----------------------------- | --------------------------- |
+| `creature_template`           | Creature Template           |
+| `creature`                    | Creature Instances (Spawns) |
+| `creature_addon`              | Creature Addon Data (Auras) |
+| `creature_ai_events`          | Creature AI Events          |
+| `creature_ai_scripts`         | Creature AI Scripts         |
+| `creature_equip_template`     | Creature Equipment Template |
+| `creature_groups`             | Creature Groups             |
+| `creature_involvedrelation`   | Quest Relations (Finisher)  |
+| `creature_loot_template`      | Creature Loot Template      |
+| `creature_movement`           | Creature Movement Paths     |
+| `creature_movement_template`  | Creature Movement Template  |
+| `creature_onkill_reputation`  | On-Kill Reputation          |
+| `creature_questrelation`      | Quest Relations (Starter)   |
+| `creature_spells`             | Creature Spells             |
+| `creature_display_info_addon` | Creature Display Info Addon |
+| `locales_creature`            | Creature Localization       |
+
+### Quest Related
+
+| Table Name             | Purpose              |
+| ---------------------- | -------------------- |
+| `quest_template`       | Quest Template       |
+| `quest_cast_objective` | Quest Cast Objective |
+| `quest_end_scripts`    | Quest End Scripts    |
+| `quest_greeting`       | Quest Greeting       |
+| `quest_start_scripts`  | Quest Start Scripts  |
+| `locales_quest`        | Quest Localization   |
+
+### GameObject Related
+
+| Table Name                      | Purpose                     |
+| ------------------------------- | --------------------------- |
+| `gameobject_template`           | GameObject Template         |
+| `gameobject`                    | GameObject Instances        |
+| `gameobject_involvedrelation`   | GameObject Quest (Finisher) |
+| `gameobject_loot_template`      | GameObject Loot Template    |
+| `gameobject_questrelation`      | GameObject Quest (Starter)  |
+| `gameobject_scripts`            | GameObject Scripts          |
+| `gameobject_display_info_addon` | GameObject Display Info     |
+| `locales_gameobject`            | GameObject Localization     |
+
+### Spell Related
+
+| Table Name              | Purpose               |
+| ----------------------- | --------------------- |
+| `spell_template`        | Spell Template        |
+| `spell_affect`          | Spell Affects         |
+| `spell_area`            | Area Spells           |
+| `spell_chain`           | Spell Chain (Ranks)   |
+| `spell_disabled`        | Disabled Spells       |
+| `spell_effect_mod`      | Spell Effect Mods     |
+| `spell_elixir`          | Elixir Types          |
+| `spell_group`           | Spell Groups          |
+| `spell_learn_spell`     | Learn Spell Relations |
+| `spell_mod`             | Spell Mods            |
+| `spell_proc_event`      | Spell Proc Events     |
+| `spell_scripts`         | Spell Scripts         |
+| `spell_target_position` | Spell Target Position |
+| `locales_spell`         | Spell Localization    |
+
+### Loot Templates
+
+| Table Name                    | Purpose               |
+| ----------------------------- | --------------------- |
+| `creature_loot_template`      | Creature Loot         |
+| `gameobject_loot_template`    | GameObject Loot       |
+| `item_loot_template`          | Item Loot (Container) |
+| `disenchant_loot_template`    | Disenchant Loot       |
+| `fishing_loot_template`       | Fishing Loot          |
+| `mail_loot_template`          | Mail Loot             |
+| `pickpocketing_loot_template` | Pickpocket Loot       |
+| `reference_loot_template`     | Reference Loot        |
+| `skinning_loot_template`      | Skinning Loot         |
+
+### NPC Interaction
+
+| Table Name             | Purpose            |
+| ---------------------- | ------------------ |
+| `npc_gossip`           | NPC Gossip         |
+| `npc_text`             | NPC Text           |
+| `npc_trainer`          | NPC Trainer        |
+| `npc_trainer_template` | Trainer Template   |
+| `npc_vendor`           | NPC Vendor         |
+| `npc_vendor_template`  | Vendor Template    |
+| `gossip_menu`          | Gossip Menu        |
+| `gossip_menu_option`   | Gossip Menu Option |
+| `gossip_scripts`       | Gossip Scripts     |
+
+### Map/Area Related
+
+| Table Name               | Purpose           |
+| ------------------------ | ----------------- |
+| `area_template`          | Area Template     |
+| `areatrigger_teleport`   | Teleport Triggers |
+| `areatrigger_template`   | Trigger Template  |
+| `areatrigger_tavern`     | Tavern Triggers   |
+| `map_template`           | Map Template      |
+| `game_graveyard_zone`    | Graveyards        |
+| `world_safe_locs_facing` | Safe Locations    |
+| `locales_area`           | Area Localization |
+
+### Battlegrounds
+
+| Table Name                | Purpose            |
+| ------------------------- | ------------------ |
+| `battleground_events`     | BG Events          |
+| `battleground_template`   | BG Template        |
+| `battlemaster_entry`      | Battlemaster Entry |
+| `creature_battleground`   | BG Creatures       |
+| `gameobject_battleground` | BG GameObjects     |
+
+### Faction/Reputation
+
+| Table Name                      | Purpose                |
+| ------------------------------- | ---------------------- |
+| `faction`                       | Faction                |
+| `faction_template`              | Faction Template       |
+| `reputation_reward_rate`        | Rep Reward Rate        |
+| `reputation_spillover_template` | Rep Spillover Template |
+| `locales_faction`               | Faction Localization   |
+
+### Player Related
+
+| Table Name                | Purpose             |
+| ------------------------- | ------------------- |
+| `player_classlevelstats`  | Class Level Stats   |
+| `player_levelstats`       | Level Stats         |
+| `player_xp_for_level`     | XP for Level        |
+| `playercreateinfo`        | Create Info         |
+| `playercreateinfo_action` | Create Actions      |
+| `playercreateinfo_item`   | Create Items        |
+| `playercreateinfo_spell`  | Create Spells       |
+| `player_factionchange_*`  | Faction Change Data |
+
+### Skill Related
+
+| Table Name                 | Purpose            |
+| -------------------------- | ------------------ |
+| `skill_fishing_base_level` | Fishing Base Level |
+| `skill_line_ability`       | Skill Line Ability |
+
+### Pet Related
+
+| Table Name            | Purpose           |
+| --------------------- | ----------------- |
+| `pet_levelstats`      | Pet Level Stats   |
+| `pet_name_generation` | Pet Name Gen      |
+| `pet_spell_data`      | Pet Spell Data    |
+| `petcreateinfo_spell` | Pet Create Spells |
+| `collection_pet`      | Pet Collection    |
+| `collection_mount`    | Mount Collection  |
+
+### Transport
+
+| Table Name              | Purpose            |
+| ----------------------- | ------------------ |
+| `taxi_nodes`            | Flight Paths       |
+| `taxi_path_transitions` | Flight Transitions |
+| `transports`            | Transports (Ships) |
+| `game_tele`             | Teleport Locations |
+| `locales_taxi_node`     | Flight Path Loc    |
+
+### Scripts
+
+| Table Name             | Purpose            |
+| ---------------------- | ------------------ |
+| `event_scripts`        | Event Scripts      |
+| `generic_scripts`      | Generic Scripts    |
+| `script_texts`         | Script Texts       |
+| `script_waypoint`      | Script Waypoints   |
+| `scripted_areatrigger` | Scripted Triggers  |
+| `scripted_event_id`    | Scripted Event IDs |
+
+### Game Events
+
+| Table Name                 | Purpose             |
+| -------------------------- | ------------------- |
+| `game_event_creature`      | Event Creatures     |
+| `game_event_creature_data` | Event Creature Data |
+| `game_event_gameobject`    | Event Objects       |
+| `game_event_mail`          | Event Mail          |
+| `game_event_quest`         | Event Quests        |
+
+### Pools
+
+| Table Name                 | Purpose            |
+| -------------------------- | ------------------ |
+| `pool_creature`            | Creature Pool      |
+| `pool_creature_template`   | Creature Pool Tmpl |
+| `pool_gameobject`          | GameObject Pool    |
+| `pool_gameobject_template` | Object Pool Tmpl   |
+| `pool_pool`                | Pool of Pools      |
+| `pool_template`            | Pool Template      |
+
+### Shop
+
+| Table Name        | Purpose         |
+| ----------------- | --------------- |
+| `shop_categories` | Shop Categories |
+| `shop_items`      | Shop Items      |
+
+### Others
+
+| Table Name           | Purpose           |
+| -------------------- | ----------------- |
+| `autobroadcast`      | Autobroadcast     |
+| `broadcast_text`     | Broadcast Text    |
+| `conditions`         | Conditions        |
+| `exploration_basexp` | Exploration XP    |
+| `game_weather`       | Weather           |
+| `mangos_string`      | MaNGOS Strings    |
+| `page_text`          | Page Text (Books) |
+| `points_of_interest` | POI               |
+| `reserved_name`      | Reserved Names    |
+| `sound_entries`      | Sound Entries     |
+| `variables`          | Server Variables  |
+| `warden_checks`      | Warden Checks     |
+| `warden_scans`       | Warden Scans      |

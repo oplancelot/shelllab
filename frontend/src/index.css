@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: Arial, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.4;
+  overflow: hidden;
+  background-color: #0a0a0a;
+  color: #fff;
+}
+
+#root {
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Prevent text selection on UI elements */
+button,
+.item,
+.list {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Custom Scrollbar (WoW/Dark Theme) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #404040;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #505050;
+}
+
+/* Focus styles for accessibility */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #ffd100;
+  outline-offset: 2px;
+}
+
+/* Hide focus outline for mouse users */
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* --- Turtle/Wowhead Layout Utilities --- */
+
+/* Infobox Table Style - Matching User Request */
+.infobox-container {
+    font-family: Arial, sans-serif;
+    /* float: right; -> Managed by Flexbox layout in JSX */
+    margin: 0 0 10px 10px;
+    background-color: #181818;
+    border: 1px solid #404040;
+    padding: 5px; /* Add some padding for internal content breathing */
+}
+
+.infobox-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.infobox-table th {
+    color: #ffd100; /* Keeping gold color for visibility */
+    font-weight: normal;
+    text-align: right;
+    padding: 2px 8px 2px 4px;
+    vertical-align: top;
+    white-space: nowrap;
+}
+
+.infobox-table td {
+    color: #fff;
+    padding: 2px 4px;
+    vertical-align: top;
+}
+
+/* Model Viewer / Composite Display Container */
+.model-viewer-container {
+  background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+  box-shadow: inset 0 0 20px #000;
+}
+
+/* Tab Active State - Custom underline effect */
+.tab-btn-active {
+  color: #fff;
+  font-weight: bold;
+  background: linear-gradient(
+    to top,
+    rgba(255, 209, 0, 0.1) 0%,
+    transparent 100%
+  );
+  border-bottom: 3px solid #ffd100;
+}
+
+.tab-btn-inactive:hover {
+  color: #ffd100;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Money Icons */
+.money-gold, .money-silver, .money-copper {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    margin-left: 2px;
+    margin-right: 4px;
+    vertical-align: middle;
+    border: 1px solid rgba(0,0,0,0.5);
+}
+.money-gold { background: #ffd100; box-shadow: 0 0 4px #ffd100; }
+.money-silver { background: #e6e6e6; box-shadow: 0 0 4px #e6e6e6; }
+.money-copper { background: #eda55f; box-shadow: 0 0 4px #eda55f; }

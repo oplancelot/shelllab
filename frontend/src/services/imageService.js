@@ -1,0 +1,111 @@
+/**
+ * Unified Image Service
+ * Handles loading images from local storage with remote fallback
+ * Works consistently in both dev and production modes
+ */
+
+// Image cache to avoid repeated API calls
+const imageCache = new Map();
+
+/**
+ * Load an image with local-first strategy
+ * @param {string} imageType - 'icon' | 'npc_model' | 'npc_map'
+ * @param {string} name - Image name without extension (e.g., 'inv_sword_01', 'model_15114')
+ * @param {string} remoteUrl - Fallback remote URL
+ * @returns {Promise<string>} - Data URL that can be used as img src
+ */
+export const loadImage = async (imageType, name, remoteUrl = null) => {
+    const cacheKey = `${imageType}:${name}`;
+    
+    // Check cache first
+    if (imageCache.has(cacheKey)) {
+        return imageCache.get(cacheKey);
+    }
+
+    // Try local first
+    if (window?.go?.main?.App?.GetLocalImage) {
+        try {
+            const result = await window.go.main.App.GetLocalImage(imageType, name);
+            if (result && result.data && !result.error) {
+                const dataUrl = `data:${result.mimeType};base64,${result.data}`;
+                imageCache.set(cacheKey, dataUrl);
+                return dataUrl;
+            }
+        } catch (e) {
+            console.log(`[ImageService] Local not found: ${name}`);
+        }
+    }
+
+    // Fallback to remote
+    if (remoteUrl) {
+        if (window?.go?.main?.App?.FetchRemoteImage) {
+            try {
+                const result = await window.go.main.App.FetchRemoteImage(remoteUrl, imageType, name);
+                if (result && result.data && !result.error) {
+                    const dataUrl = `data:${result.mimeType};base64,${result.data}`;
+                    imageCache.set(cacheKey, dataUrl);
+                    return dataUrl;
+                }
+            } catch (e) {
+                console.log(`[ImageService] Remote fetch failed: ${remoteUrl}`);
+            }
+        }
+        
+        // If API not available, return the remote URL directly
+        // This allows the browser to load it (works for external URLs)
+        return remoteUrl;
+    }
+
+    return null;
+};
+
+/**
+ * Load an icon with fallback chain
+ * @param {string} iconName - Icon name (e.g., 'inv_sword_01')
+ * @returns {Promise<string>} - Image URL
+ */
+export const loadIcon = async (iconName) => {
+    if (!iconName) return null;
+    
+    const name = iconName.toLowerCase();
+    const cdnUrl = `https://wow.zamimg.com/images/wow/icons/medium/${name}.jpg`;
+    
+    return loadImage('icon', name, cdnUrl);
+};
+
+/**
+ * Load NPC model image
+ * @param {number} npcId - NPC entry ID
+ * @param {string} remoteUrl - Remote URL from Wowhead
+ * @returns {Promise<string>} - Image URL
+ */
+export const loadNpcModel = async (npcId, remoteUrl) => {
+    return loadImage('npc_model', `model_${npcId}`, remoteUrl);
+};
+
+/**
+ * Load NPC map image
+ * @param {number} npcId - NPC entry ID
+ * @param {string} remoteUrl - Remote URL from Wowhead
+ * @returns {Promise<string>} - Image URL
+ */
+export const loadNpcMap = async (npcId, remoteUrl) => {
+    return loadImage('npc_map', `map_${npcId}`, remoteUrl);
+};
+
+/**
+ * Clear image cache (useful for forcing refresh)
+ */
+export const clearImageCache = () => {
+    imageCache.clear();
+};
+
+/**
+ * Preload multiple images in background
+ * @param {Array<{type: string, name: string, url: string}>} images
+ */
+export const preloadImages = async (images) => {
+    await Promise.all(
+        images.map(img => loadImage(img.type, img.name, img.url))
+    );
+};
